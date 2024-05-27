@@ -2,18 +2,18 @@
 
 # Introduction
 
-ABP Framework Blazor WASM and Maui Blazor applications using MudBlazor showing one to many relationship.
+ABP Framework Blazor WASM and Maui Blazor applications using MudBlazor with one-to-many relationships.
 
 ## Overview
 
-This repository contains an ASP.NET Core ABP Framework application with a Blazor WebAssembly (WASM) UI and Maui Blazor UI in .NET 8. It also includes user authentication using ASP.NET Core 8 Identity, uses Entity Framework Core SQLite as the database, and supports OData for efficient querying.
+This repository contains an ASP.NET Core ABP Framework application with a Blazor WebAssembly (WASM) UI and Maui Blazor UI in .NET 8. It also includes user authentication using ASP.NET Core 8 Identity, which uses Entity Framework Core SQLite as the database.
 
 ## Features
 
 - ABP Framework ASP.NET Core web server: A robust and high-performance server.
 - Blazor WASM UI: A modern web UI framework for .NET.
 - Maui Blazor UI: A modern web UI framework for .NET.
-- MudBlazor conponents: Using side or top navigation.
+- MudBlazor components: Using side or top navigation.
 - Swagger UI: An interactive documentation for your API.
 - ASP.NET Core 8 Identity: A membership system that adds login functionality to your application.
 - Entity Framework Core SQLite: A lightweight database provider for Entity Framework Core.
