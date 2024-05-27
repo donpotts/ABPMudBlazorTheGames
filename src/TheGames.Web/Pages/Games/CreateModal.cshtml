@@ -1,0 +1,19 @@
+@page
+@using TheGames.Localization
+@using TheGames.Web.Pages.Games
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model CreateModalModel
+@inject IStringLocalizer<TheGamesResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="Game" asp-page="/Games/CreateModal">
+    <abp-modal>
+        <abp-modal-header title="@L["NewGame"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel|AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

@@ -1,0 +1,34 @@
+@page
+@using TheGames.Localization
+@using TheGames.Permissions
+@using TheGames.Web.Pages.Games
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@model IndexModel
+@inject IStringLocalizer<TheGamesResource> L
+@inject IAuthorizationService AuthorizationService
+@section scripts
+{
+    <abp-script src="/Pages/Games/Index.js" />
+}
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6">
+                <abp-card-title>@L["Menu:Games"]</abp-card-title>
+            </abp-column>
+            <abp-column size-md="_6" class="text-end">
+                 @if (await AuthorizationService.IsGrantedAsync(TheGamesPermissions.Games.Create))
+                {
+                    <abp-button id="NewGameButton"
+                                text="@L["NewGame"].Value"
+                                icon="plus"
+                                button-type="Primary"/>
+                }
+            </abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body>
+        <abp-table striped-rows="true" id="GamesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

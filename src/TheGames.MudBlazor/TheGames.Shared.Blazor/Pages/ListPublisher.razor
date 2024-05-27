@@ -1,0 +1,127 @@
+@page "/publisher"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Publisher</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Publisher</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
+</MudStack>
+
+<MudDataGrid T="Publisher" @ref="grid" ServerData="(new Func<GridState<Publisher>, Task<GridData<Publisher>>>(ServerReload))" Filterable="true">
+    <ToolBarContent>
+         <MudText Typo="Typo.h6">Publisher</MudText>
+         <MudSpacer />
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.Name" Title="Name" />
+        <PropertyColumn Property="x => x!.Country" Title="Country" />
+        <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Publisher" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private MudDataGrid<Publisher>? grid;
+    private string? loadError;
+    private Publisher[] records;
+    
+    private async Task<GridData<Publisher>> ServerReload(GridState<Publisher> state)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        string? orderby = "";
+        var RecordCount = 0;
+
+        if (state.SortDefinitions.Any())
+        {
+            var firstSortDefinition = state.SortDefinitions.First();
+            var direction = firstSortDefinition.Descending;
+            if (direction)
+                orderby = firstSortDefinition.SortBy + " desc";
+            else
+                orderby = firstSortDefinition.SortBy;
+        }
+
+        try
+        {
+            PagedResultDto<Publisher> res = await AppService.ListPublishersAsync(orderby, skip, top);
+
+            records = res.Items.ToArray();
+            RecordCount = (int)res.TotalCount;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        return new() { TotalItems = RecordCount, Items = records?.ToList() ?? Enumerable.Empty<Publisher>() };
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<AddPublisher>("Add Publisher", dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnEdit(Publisher record)
+    {
+        DialogParameters<UpdatePublisher> dialogParams = new() { { x => x.Id, record.Id!.Value } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<UpdatePublisher>("Update Publisher", dialogParams, dialogOptions);
+        await Task.Delay(1000);  // Force UI rerender
+        StateHasChanged();
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnDelete(Publisher record)
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Warning",
+            "Are you sure you want to delete this record?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeletePublisherAsync(record.Id!.Value);
+                await (grid?.ReloadServerData() ?? Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+}
