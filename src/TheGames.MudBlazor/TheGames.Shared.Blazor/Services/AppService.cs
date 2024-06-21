@@ -55,6 +55,14 @@ public class AppService
         await HandleResponseErrorsAsync(response);
     }
 
+    public async Task AccountRegisterAsync(string userName, string emailAddress, string password, string appName)
+    {
+        HttpRequestMessage request = new(HttpMethod.Post, "api/account/register");
+        request.Content = JsonContent.Create(new { userName, emailAddress, password, appName });
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
     public async Task ChangePasswordAsync(string userName, string currentPassword, string newPassword)
     {
         string token = authenticationStateProvider.Token
