@@ -23,12 +23,12 @@
         <MudToolBar>
             <MudLink Href="/" Class="d-flex px-4" Color="Color.Inherit">Home</MudLink>
             <AuthorizeView>
-            <MudLink Href="/game" Class="d-flex px-4" Color="Color.Inherit">Game</MudLink>
-        <MudLink Href="/publisher" Class="d-flex px-4" Color="Color.Inherit">Publisher</MudLink>
+            <MudLink Href="/game" Class="d-flex px-4" Color="Color.Inherit">Games</MudLink>
+        <MudLink Href="/publisher" Class="d-flex px-4" Color="Color.Inherit">Publishers</MudLink>
 
             </AuthorizeView>
             <AuthorizeView>
-                <MudLink Href="/users" Class="d-flex px-4" Color="Color.Inherit">User</MudLink>
+                <MudLink Href="/users" Class="d-flex px-4" Color="Color.Inherit">Users</MudLink>
             </AuthorizeView>
             <AuthorizeView>
                 <Authorized>
@@ -62,12 +62,12 @@
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
         <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
         <AuthorizeView>
-            <MudNavLink Href="/game" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Games">Game</MudNavLink>
-        <MudNavLink Href="/publisher" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PrecisionManufacturing">Publisher</MudNavLink>
+            <MudNavLink Href="/game" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Games">Games</MudNavLink>
+        <MudNavLink Href="/publisher" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PrecisionManufacturing">Publishers</MudNavLink>
 
         </AuthorizeView>
         <AuthorizeView>
-            <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">User</MudNavLink>
+            <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>

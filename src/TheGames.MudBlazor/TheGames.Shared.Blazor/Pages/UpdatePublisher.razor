@@ -26,7 +26,6 @@ else
                 <MudText Typo="Typo.h6">Update Publisher</MudText>
             </TitleContent>
             <DialogContent>
-                <MudNumericField @bind-Value="record.Id" For="@(() => record.Id)" Label="Id" ReadOnly="true" />
                 <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
                 <MudTextField @bind-Value="record.Country" For="@(() => record.Country)" Label="Country" />
             </DialogContent>

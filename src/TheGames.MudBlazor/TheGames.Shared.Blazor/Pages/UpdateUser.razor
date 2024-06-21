@@ -31,7 +31,6 @@ else
                 <MudText Typo="Typo.h6">Update User</MudText>
             </TitleContent>
             <DialogContent>
-                <MudNumericField @bind-Value="record.Id" For="@(() => record.Id)" Label="User Id" ReadOnly="true" HideSpinButtons="true" />
                 <MudTextField @bind-Value="record.UserName" For="@(() => record.UserName)" Label="User Name" ReadOnly="true" />
                 <MudTextField @bind-Value="record.Password" For="@(() => record.Password)" Label="Password" />
                 <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="First Name" />

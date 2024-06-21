@@ -31,7 +31,6 @@ else
 
     <MudDataGrid T="User" @ref="grid" ServerData="(new Func<GridState<User>, Task<GridData<User>>>(ServerReload))" Filterable="true">
         <Columns>
-            <PropertyColumn Property="x => x!.Id" Title="Id" />
             <PropertyColumn Property="x => x!.UserName" Title="User Name" />
             <PropertyColumn Property="x => x!.Name" Title="First Name" />
             <PropertyColumn Property="x => x!.Surname" Title="Last Name" />
@@ -45,6 +44,7 @@ else
             <TemplateColumn StickyRight="true" Sortable="false" Filterable="false">
                 <CellTemplate>
                     <MudStack Row="true">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Badge" Size="@Size.Small" Title="Roles" OnClick="@(e => OnModifyRoles(context.Item!))" />
                         <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
                         <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                     </MudStack>
@@ -115,6 +115,14 @@ else
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
+    }
+
+    private async void OnModifyRoles(User record)
+    {
+        DialogParameters<ModifyRoles> dialogParams = new() { { x => x.Id, record.Id } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        await DialogService.Show<ModifyRoles>("Modify Roles", dialogParams, dialogOptions).Result;
     }
 
     private async void OnEdit(User record)

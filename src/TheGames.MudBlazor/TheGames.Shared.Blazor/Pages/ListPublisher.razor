@@ -6,10 +6,10 @@
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
 
-<PageTitle>Publisher</PageTitle>
+<PageTitle>List Publishers</PageTitle>
 
 <div class="mb-3">
-    <MudText Typo="Typo.h3">Publisher</MudText>
+    <MudText Typo="Typo.h3">Publishers</MudText>
 </div>
 
 <MudStack AlignItems="AlignItems.End" Class="mb-3">
@@ -17,12 +17,7 @@
 </MudStack>
 
 <MudDataGrid T="Publisher" @ref="grid" ServerData="(new Func<GridState<Publisher>, Task<GridData<Publisher>>>(ServerReload))" Filterable="true">
-    <ToolBarContent>
-         <MudText Typo="Typo.h6">Publisher</MudText>
-         <MudSpacer />
-    </ToolBarContent>
     <Columns>
-        <PropertyColumn Property="x => x!.Id" Title="Id" />
         <PropertyColumn Property="x => x!.Name" Title="Name" />
         <PropertyColumn Property="x => x!.Country" Title="Country" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">

@@ -8,10 +8,10 @@
 @inject NavigationManager Navigation
 @attribute [Authorize]
 
-<PageTitle>Game</PageTitle>
+<PageTitle>List Games</PageTitle>
 
 <div class="mb-3">
-    <MudText Typo="Typo.h3">Game</MudText>
+    <MudText Typo="Typo.h3">Games</MudText>
 </div>
 
 <MudStack AlignItems="AlignItems.End" Class="mb-3">
@@ -19,12 +19,7 @@
 </MudStack>
 
 <MudDataGrid T="Game" @ref="grid" ServerData="(new Func<GridState<Game>, Task<GridData<Game>>>(ServerReload))" Filterable="true">
-    <ToolBarContent>
-         <MudText Typo="Typo.h6">Game</MudText>
-         <MudSpacer />
-    </ToolBarContent>
     <Columns>
-        <PropertyColumn Property="x => x!.Id" Title="Id" />
         <PropertyColumn Property="x => x!.Name" Title="Name" />
         <PropertyColumn Property="x => x!.Developer" Title="Developer" />
         <PropertyColumn Property="x => x!.PublisherName" Title="Publisher" />

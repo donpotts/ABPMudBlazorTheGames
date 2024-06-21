@@ -110,6 +110,61 @@ public class AppService
         return await response.Content.ReadFromJsonAsync<User>();
     }
 
+    public async Task<RoleItemsDto<RoleItems>> GetRolesByUserIdAsync(string id)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"api/identity/users/{id}/roles");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
+    }
+
+    public async Task<RoleItemsDto<RoleItems>> GetAllRolesAsync()
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"api/identity/roles/all");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
+    }
+
+    public class RoleNames
+    {
+        public List<string> roleNames { get; set; }
+    }
+
+    public async Task ModifyRolesAsync(string key, IEnumerable<string> roleNames)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"api/identity/users/{key}/roles");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        RoleNames roles = new RoleNames
+        {
+            roleNames = roleNames.ToList()
+        };
+
+        request.Content = JsonContent.Create(roles);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
     public async Task UpdateUserAsync(string id, User data)
     {
         string token = authenticationStateProvider.Token
