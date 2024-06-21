@@ -32,6 +32,7 @@
             </AuthorizeView>
             <AuthorizeView>
                 <Authorized>
+                    <MudLink Href="/account/changePassword" Class="d-flex px-4" Color="Color.Inherit">Change Password</MudLink>
                     <MudLink Href="/logout" Class="d-flex px-4" Color="Color.Inherit">Logout (@context.User.Identity!.Name)</MudLink>
                 </Authorized>
                 <NotAuthorized>
@@ -70,6 +71,7 @@
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
+                <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Change Password</MudNavLink>
                 <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
             </Authorized>
             <NotAuthorized>
