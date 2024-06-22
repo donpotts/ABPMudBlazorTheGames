@@ -5,6 +5,8 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using static System.Formats.Asn1.AsnWriter;
+using TheGames.Shared.Models;
+using TheGames.Shared.Blazor.Services;
 
 namespace TheGames.Shared.Blazor.Authentication;
 
@@ -30,9 +32,6 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         Token = null;
         currentUser = anonymousUser;
 
-        //HttpResponseMessage response = await httpClient.PostAsJsonAsync(
-        //    "/api/Users/login",
-        //    loginModel);
         var RequestBody = new List<KeyValuePair<string, string>>
         {
             new KeyValuePair<string, string>("client_id", loginModel.ClientId),
@@ -65,15 +64,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             response.EnsureSuccessStatusCode();
         }
 
-        //string? token = await response.Content.ReadFromJsonAsync<string>();
-        //AutorizeToken? content = await response.Content.ReadFromJsonAsync<AutorizeToken>();
         var content = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
 
         string? token;
         if (content == null)
             token = "";
         else
-            //token = content.Token;
             token = content.Access_Token;
 
         if (token == null)
@@ -110,15 +106,33 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         ClaimsIdentity loggedInUserIdentity = new(jwt.Claims, "jwt");
 
         Claim? nameClaim = loggedInUserIdentity.FindFirst(JwtRegisteredClaimNames.UniqueName);
+        Claim? nameIdClaim = loggedInUserIdentity.FindFirst(JwtRegisteredClaimNames.Sub);
 
-        if (nameClaim != null)
+        if (nameClaim != null && nameClaim.Value != null)
         {
             loggedInUserIdentity.AddClaim(new(ClaimTypes.Name, nameClaim.Value));
 
-            // Add role claim if username is admin
-            if (nameClaim.Value.ToLower() == "admin")
+            if (nameIdClaim != null && nameIdClaim.Value != null)
             {
-                loggedInUserIdentity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
+                HttpRequestMessage requestRoles = new(HttpMethod.Get, $"api/identity/users/{nameIdClaim.Value}/roles");
+                requestRoles.Headers.Add("Authorization", $"Bearer {token}");
+
+                HttpResponseMessage responseRoles = await httpClient.SendAsync(requestRoles);
+
+                if (responseRoles != null && responseRoles.StatusCode == HttpStatusCode.OK)
+                {
+                    RoleItemsDto<RoleItems>? roleItems = await responseRoles.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
+
+                    var roleNames = roleItems?.Items?.Select(item => item.Name).ToList();
+
+                    if (roleNames != null)
+                    {
+                        foreach (string roleName in roleNames)
+                        {
+                            loggedInUserIdentity.AddClaim(new Claim(ClaimTypes.Role, roleName));
+                        }
+                    }
+                }
             }
         }
 
