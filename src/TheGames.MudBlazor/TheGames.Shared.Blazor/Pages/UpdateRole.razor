@@ -34,6 +34,7 @@ else
                 <MudTextField @bind-Value="roleItem.Name" For="@(() => roleItem.Name)" Label="Name" ReadOnly="true" />
                 <MudCheckBox @bind-Value="roleItem.IsDefault" For="@(() => roleItem.IsDefault)" Label="Is Default" />
                 <MudCheckBox @bind-Value="roleItem.IsPublic" For="@(() => roleItem.IsPublic)" Label="Is Public" />
+                
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>
@@ -51,6 +52,8 @@ else
     MudDialogInstance? MudDialog { get; set; }
 
     private RoleItems? roleItem;
+
+    HashSet<string> SelectedValues { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

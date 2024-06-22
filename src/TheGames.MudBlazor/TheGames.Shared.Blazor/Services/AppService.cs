@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Specialized;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Principal;
 using System.Text.Json.Serialization;
@@ -197,6 +198,41 @@ public class AppService
 
         await HandleResponseErrorsAsync(response);
     }
+
+    public async Task ModifyPermissionsAsync(string providerName, string providerKey, List<object> permissions)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"api/permission-management/permissions?providerName={providerName}&providerKey={providerKey}");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        var content = new { permissions = permissions };
+
+        request.Content = JsonContent.Create(content);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task<PermissionsDto> GetPermissionsAsync(string providerName, string providerKey)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+        HttpRequestMessage request = new(HttpMethod.Get, $"api/permission-management/permissions?providerName={providerName}&providerKey={providerKey}");
+        
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        //var myperms = await response.Content.ReadFromJsonAsync<PermissionsDto>();
+
+        return await response.Content.ReadFromJsonAsync<PermissionsDto>();
+    }
+
 
     public async Task UpdateUserAsync(string id, User data)
     {

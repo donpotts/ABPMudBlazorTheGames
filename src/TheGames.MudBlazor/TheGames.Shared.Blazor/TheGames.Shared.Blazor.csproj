@@ -31,4 +31,12 @@
     <None Include="libman.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\UpdatePermissions.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\UpdatePermissions.razor" />
+  </ItemGroup>
+
 </Project>
