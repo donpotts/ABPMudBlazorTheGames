@@ -102,7 +102,6 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         ClaimsIdentity loggedInUserIdentity = new(jwt.Claims, "jwt");
-
         Claim? nameClaim = loggedInUserIdentity.FindFirst(JwtRegisteredClaimNames.UniqueName);
         Claim? nameIdClaim = loggedInUserIdentity.FindFirst(JwtRegisteredClaimNames.Sub);
 

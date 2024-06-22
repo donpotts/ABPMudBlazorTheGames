@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\common.props" />
 
@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\TheGames.EntityFrameworkCore\TheGames.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\TheGames.Application.Tests\TheGames.Application.Tests.csproj" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="8.1.3" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>
