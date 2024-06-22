@@ -1,14 +1,16 @@
-@page "/users"
+﻿@page "/roles"
+@implements IDisposable
 @inject AppService AppService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @attribute [Authorize]
 
-<PageTitle>List Users</PageTitle>
+<PageTitle>List Roles</PageTitle>
 
-@if (users == null)
+@if (roleItems == null)
 {
     @if (loadError == null)
     {
@@ -22,29 +24,29 @@
 else
 {
     <div class="mb-3">
-        <MudText Typo="Typo.h3">Users</MudText>
+        <MudText Typo="Typo.h3">Roles</MudText>
     </div>
 
     <MudStack AlignItems="AlignItems.End" Class="mb-3">
         <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
     </MudStack>
 
-    <MudDataGrid T="User" @ref="grid" ServerData="(new Func<GridState<User>, Task<GridData<User>>>(ServerReload))" Filterable="false">
+    <MudDataGrid T="RoleItems" @ref="grid" ServerData="(new Func<GridState<RoleItems>, Task<GridData<RoleItems>>>(ServerReload))" Filterable="false">
         <Columns>
-            <PropertyColumn Property="x => x!.UserName" Title="User Name" />
-            <PropertyColumn Property="x => x!.Name" Title="First Name" />
-            <PropertyColumn Property="x => x!.Surname" Title="Last Name" />
-            <PropertyColumn Property="x => x!.Email" Title="Email" />
-            <PropertyColumn Property="x => x!.PhoneNumber" Title="Phone Number" />
-            <TemplateColumn Title="Is Active" Sortable="false">
+            <PropertyColumn Property="x => x!.Name" Title="Name" />
+            <TemplateColumn Title="Is Default" Sortable="false">
                 <CellTemplate>
-                    <MudCheckBox @bind-Checked="context.Item.IsActive" Disabled="true" />
+                    <MudCheckBox @bind-Checked="context.Item.IsDefault" Disabled="true" />
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Is Public" Sortable="false">
+                <CellTemplate>
+                    <MudCheckBox @bind-Checked="context.Item.IsPublic" Disabled="true" />
                 </CellTemplate>
             </TemplateColumn>
             <TemplateColumn StickyRight="true" Sortable="false" Filterable="false">
                 <CellTemplate>
                     <MudStack Row="true">
-                        <MudIconButton Icon="@Icons.Material.Outlined.Badge" Size="@Size.Small" Title="Roles" OnClick="@(e => OnModifyRoles(context.Item!))" />
                         <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
                         <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                     </MudStack>
@@ -58,25 +60,47 @@ else
 }
 
 @code {
-    private MudDataGrid<User>? grid;
+    private MudDataGrid<RoleItems>? grid;
     private string? loadError;
 
-    private User[]? users;
+    private RoleItems[]? roleItems;
 
     protected override async Task OnInitializedAsync()
     {
+        Navigation.LocationChanged += LocationChanged;
+
+        await LoadDataAsync();
+    }
+
+    void IDisposable.Dispose()
+    {
+        Navigation.LocationChanged -= LocationChanged;
+    }
+
+    private async void LocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        roleItems = null;
+        StateHasChanged();
+
+        await LoadDataAsync();
+        StateHasChanged();
+    }
+
+    private async Task LoadDataAsync()
+    {
         try
         {
-            PagedResultDto<User> res = await AppService.ListUsersAsync("", 0, null);
-            users = res.Items.ToArray();
+            RoleItemsDto<RoleItems> res = await AppService.ListRolesAsync("", 0, null);
+            roleItems = res.Items.ToArray();
         }
         catch (Exception ex)
         {
             loadError = ex.Message;
+            Snackbar.Add(ex.Message, Severity.Error);
         }
     }
 
-    private async Task<GridData<User>> ServerReload(GridState<User> state)
+    private async Task<GridData<RoleItems>> ServerReload(GridState<RoleItems> state)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -88,28 +112,27 @@ else
             var firstSortDefinition = state.SortDefinitions.First();
             var direction = firstSortDefinition.Descending;
             if (direction)
-                orderby = firstSortDefinition.SortBy + " desc";
+                orderby = "Name" + " desc";
             else
-                orderby = firstSortDefinition.SortBy;
+                orderby = "Name";
         }
         try
         {
-            PagedResultDto<User> res = await AppService.ListUsersAsync(orderby, skip, top);
-            users = res.Items.ToArray();
-            RecordCount = (int)res.TotalCount;
+            RoleItemsDto<RoleItems> res = await AppService.ListRolesAsync(orderby, skip, top);
+            roleItems = res.Items.ToArray();
         }
         catch (Exception ex)
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }
-        return new() { TotalItems = RecordCount, Items = users?.ToList() ?? Enumerable.Empty<User>() };
+        return new() { TotalItems = RecordCount, Items = roleItems?.ToList() ?? Enumerable.Empty<RoleItems>() };
     }
 
     private async void OnAdd()
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddUser>("Add User", dialogOptions).Result;
+        var result = await DialogService.Show<AddRole>("Add Role", dialogOptions).Result;
 
         if (!result.Canceled)
         {
@@ -117,7 +140,7 @@ else
         }
     }
 
-    private async void OnModifyRoles(User record)
+    private async void OnModifyRoles(RoleItems record)
     {
         DialogParameters<ModifyRoles> dialogParams = new() { { x => x.Id, record.Id } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
@@ -125,12 +148,12 @@ else
         await DialogService.Show<ModifyRoles>("Modify Roles", dialogParams, dialogOptions).Result;
     }
 
-    private async void OnEdit(User record)
+    private async void OnEdit(RoleItems record)
     {
-        DialogParameters<UpdateUser> dialogParams = new() { { x => x.Id, record.Id } };
+        DialogParameters<UpdateRole> dialogParams = new() { { x => x.Id, record.Id } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var dialog = await DialogService.ShowAsync<UpdateUser>("Update User", dialogParams, dialogOptions);
+        var dialog = await DialogService.ShowAsync<UpdateRole>("Update Role", dialogParams, dialogOptions);
         await Task.Delay(1000);  // Force UI rerender
         StateHasChanged();
         var result = await dialog.Result;
@@ -141,7 +164,7 @@ else
         }
     }
 
-    private async void OnDelete(User record)
+    private async void OnDelete(RoleItems record)
     {
         var result = await DialogService.ShowMessageBox(
             "Warning",
@@ -153,7 +176,7 @@ else
         {
             try
             {
-                await AppService.DeleteUserAsync(record.Id!);
+                await AppService.DeleteRoleAsync(record.Id!);
                 await (grid?.ReloadServerData() ?? Task.CompletedTask);
             }
             catch (Exception ex)

@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="Publisher" @ref="grid" ServerData="(new Func<GridState<Publisher>, Task<GridData<Publisher>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="Publisher" @ref="grid" ServerData="(new Func<GridState<Publisher>, Task<GridData<Publisher>>>(ServerReload))" Filterable="false">
     <Columns>
         <PropertyColumn Property="x => x!.Name" Title="Name" />
         <PropertyColumn Property="x => x!.Country" Title="Country" />

@@ -125,12 +125,45 @@ public class AppService
         return await response.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
     }
 
+    public async Task<RoleItems> GetRoleByIdAsync(string id)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"api/identity/roles/{id}");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<RoleItems>();
+    }
+
     public async Task<RoleItemsDto<RoleItems>> GetAllRolesAsync()
     {
         string token = authenticationStateProvider.Token
             ?? throw new Exception("Not authorized");
 
         HttpRequestMessage request = new(HttpMethod.Get, $"api/identity/roles/all");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
+    }
+
+    public async Task<RoleItemsDto<RoleItems>> ListRolesAsync(string orderby, int skip, int? top)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        Uri uri = new(httpClient.BaseAddress, "api/identity/roles");
+        uri = GetUri(uri, top, skip, orderby);
+
+        HttpRequestMessage request = new(HttpMethod.Get, uri);
         request.Headers.Add("Authorization", $"Bearer {token}");
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -185,6 +218,47 @@ public class AppService
             ?? throw new Exception("Not authorized");
 
         HttpRequestMessage request = new(HttpMethod.Delete, $"api/identity/users/{id}");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task AddRoleAsync(RoleItems roleModel)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "api/identity/roles");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        request.Content = JsonContent.Create(roleModel);
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task UpdateRoleAsync(string id, RoleItems data)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"api/identity/roles/{id}");
+        request.Headers.Add("Authorization", $"Bearer {token}");
+        request.Content = JsonContent.Create(data);
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task DeleteRoleAsync(string id)
+    {
+        string token = authenticationStateProvider.Token
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"api/identity/roles/{id}");
         request.Headers.Add("Authorization", $"Bearer {token}");
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
