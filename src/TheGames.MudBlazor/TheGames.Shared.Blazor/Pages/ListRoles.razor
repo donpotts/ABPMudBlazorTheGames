@@ -47,8 +47,7 @@ else
             <TemplateColumn StickyRight="true" Sortable="false" Filterable="false">
                 <CellTemplate>
                     <MudStack Row="true">
-                        <MudIconButton Icon="@Icons.Material.Outlined.Badge" Size="@Size.Small" Title="Permissions" OnClick="@(e => OnModifyPermissions(context.Item!))" />
-                        <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Permissions" OnClick="@(e => OnEdit(context.Item!))" />
                         <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                     </MudStack>
                 </CellTemplate>
@@ -141,24 +140,16 @@ else
         }
     }
 
-    private async void OnModifyPermissions(RoleItems record)
+    private async void OnEdit(RoleItems record)
     {
         DialogParameters<UpdatePermissions> dialogParams = new() { { x => x.Name, record.Name } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        await DialogService.Show<UpdatePermissions>("", dialogParams, dialogOptions).Result;
-    }
-
-    private async void OnEdit(RoleItems record)
-    {
-        DialogParameters<UpdateRole> dialogParams = new() { { x => x.Id, record.Name } };
-        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
-
-        var dialog = await DialogService.ShowAsync<UpdateRole>("Update Role", dialogParams, dialogOptions);
+        var dialog = await DialogService.ShowAsync<UpdatePermissions>("", dialogParams, dialogOptions);
         await Task.Delay(1000);  // Force UI rerender
         StateHasChanged();
         var result = await dialog.Result;
-
+        
         if (!result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
