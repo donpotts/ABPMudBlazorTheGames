@@ -4,9 +4,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using static System.Formats.Asn1.AsnWriter;
 using TheGames.Shared.Models;
-using TheGames.Shared.Blazor.Services;
 
 namespace TheGames.Shared.Blazor.Authentication;
 
@@ -116,15 +114,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
             {
                 HttpRequestMessage requestRoles = new(HttpMethod.Get, $"api/identity/users/{nameIdClaim.Value}/roles");
                 requestRoles.Headers.Add("Authorization", $"Bearer {token}");
-
                 HttpResponseMessage responseRoles = await httpClient.SendAsync(requestRoles);
 
                 if (responseRoles != null && responseRoles.StatusCode == HttpStatusCode.OK)
                 {
                     RoleItemsDto<RoleItems>? roleItems = await responseRoles.Content.ReadFromJsonAsync<RoleItemsDto<RoleItems>>();
-
                     var roleNames = roleItems?.Items?.Select(item => item.Name).ToList();
-
                     if (roleNames != null)
                     {
                         foreach (string roleName in roleNames)
