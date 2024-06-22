@@ -114,6 +114,12 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
         if (nameClaim != null)
         {
             loggedInUserIdentity.AddClaim(new(ClaimTypes.Name, nameClaim.Value));
+
+            // Add role claim if username is admin
+            if (nameClaim.Value.ToLower() == "admin")
+            {
+                loggedInUserIdentity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
+            }
         }
 
         Token = token;

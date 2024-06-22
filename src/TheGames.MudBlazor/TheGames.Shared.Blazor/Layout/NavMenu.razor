@@ -27,9 +27,11 @@
         <MudLink Href="/publisher" Class="d-flex px-4" Color="Color.Inherit">Publishers</MudLink>
 
             </AuthorizeView>
-            <AuthorizeView>
-                <MudLink Href="/roles" Class="d-flex px-4" Color="Color.Inherit">Roles</MudLink>
-                <MudLink Href="/users" Class="d-flex px-4" Color="Color.Inherit">Users</MudLink>
+                <AuthorizeView Roles="admin">
+                <MudMenu StartIcon="@Icons.Material.Outlined.Settings" Color="Color.Inherit"  EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Admin">
+                    <MudLink Href="/roles" Class="d-flex px-4" Color="Color.Inherit">Roles</MudLink>
+                    <MudLink Href="/users" Class="d-flex px-4" Color="Color.Inherit">Users</MudLink>
+                </MudMenu>
             </AuthorizeView>
             <AuthorizeView>
                 <Authorized>
@@ -67,9 +69,11 @@
         <MudNavLink Href="/publisher" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PrecisionManufacturing">Publishers</MudNavLink>
 
         </AuthorizeView>
-        <AuthorizeView>
-            <MudNavLink Href="/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RollerShades">Roles</MudNavLink>
-            <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+        <AuthorizeView Roles="admin">
+            <MudNavGroup Title="Admin" Expanded="adminMenu" Color="Color.Inherit" Icon="@Icons.Material.Outlined.Settings">
+                <MudNavLink Href="/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RollerShades">Roles</MudNavLink>
+                <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+            </MudNavGroup>
         </AuthorizeView>
         <AuthorizeView>
             <Authorized>
@@ -86,11 +90,14 @@
 @code {
     private bool drawerOpen = true;
     bool _dark = true;
+    private bool adminMenu = false;
     private bool isDarkMode;
     private MudThemeProvider? mudThemeProvider;
     private bool isSwitchChecked;
     private bool CheckedVariable;
     private string tooltipText => isSwitchChecked ? "Top Menu ON" : "Top Menu is OFF";
+
+    private AuthenticationState authenticationState;
 
     private bool _themingDrawerOpen;
 
@@ -141,8 +148,8 @@
             };
 
         await ThemeManagerChanged(_themeManager);
-
     }
+
     private void DrawerToggle()
     {
         drawerOpen = !drawerOpen;

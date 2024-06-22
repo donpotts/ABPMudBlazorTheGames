@@ -1,5 +1,6 @@
 @page "/login"
 @using TheGames.Shared.Blazor.Authentication
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
@@ -47,6 +48,7 @@
         {
             await ((JwtAuthenticationStateProvider)AuthenticationStateProvider)
                 .LoginAsync(loginModel);
+            
         }
         catch (Exception ex)
         {
