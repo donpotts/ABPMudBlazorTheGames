@@ -31,25 +31,12 @@ else
                 @foreach (var group in PermissionInfo.Groups)
                 {
                     <MudText Typo="Typo.h5">@group.DisplayName</MudText>
+                    <MudCheckBox T="bool?" Color="Color.Primary" Label="Select all" Value="group.Permissions.All(x => x.IsGranted) ? true : (group.Permissions.Any(x => x.IsGranted) ? null : false)" ValueChanged="e => OnSelectAll(e, group)" ReadOnly="@IsAdmin" />
                     foreach (var permission in group.Permissions)
                     {
                         <MudCheckBox Color="Color.Primary" @bind-Checked="permission.IsGranted" Label="@permission.DisplayName" ReadOnly="@IsAdmin" />
                     }
                 }
-
-               @*  <MudTreeView T="string" >
-                    <MudText Typo="Typo.h5">Permissions: @PermissionInfo.EntityDisplayName</MudText>
-                    @foreach (var group in PermissionInfo.Groups)
-                    {
-                        <MudTreeViewItem Value="@group.DisplayName" Expanded="true">
-                            @foreach (var permission in group.Permissions)
-                            {
-                                <MudCheckBox @bind-Checked="permission.IsGranted" Label="@permission.DisplayName" />
-                            }
-                        </MudTreeViewItem>
-                    }
-                </MudTreeView> *@
-
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>
@@ -71,6 +58,19 @@ else
     public PermissionsDto PermissionInfo;
 
     List<object> permissions = new List<object>();
+
+    private void OnSelectAll(bool? value, PermissionsDto.Group group)
+    {
+        if (!value.HasValue)
+        {
+            return;
+        }
+
+        foreach (var permission in group.Permissions)
+        {
+            permission.IsGranted = value.Value;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
